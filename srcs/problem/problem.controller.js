@@ -54,10 +54,24 @@ export const getProblem = async (req, res) => {
 export const editProblem = async (req, res) => {
   try {
     const { problemId } = req.params;
-    const problemData = req.body;
-    await ProblemService.editProblem(problemId, problemData);
-    res.send(response(status.SUCCESS, editProblemResponseDTO("문제 수정 성공")));
+    const { problemText, answerText, mainCategory, category, subCategory } = req.body;
+    const files = req.files || {}; // 문제 이미지 파일들
+
+    // 1. 문제 텍스트 및 정답 업데이트
+    await ProblemService.updateProblemTextAndAnswer(problemId, problemText, answerText);
+
+    // 2. 문제 이미지 업데이트 (하나의 함수로 통합)
+    await ProblemService.updateProblemImages(problemId, files);
+
+    // 3. 추가 이미지 업데이트
+    await ProblemService.updateAdditionalProblemImages(problemId, files.additionalProblemImage);
+
+    // 4. 문제 유형 업데이트
+    await ProblemService.updateProblemTypes(problemId, mainCategory, category, subCategory);
+
+    res.send(response(status.SUCCESS, editProblemResponseDTO()));
   } catch (error) {
+    console.error("문제 수정 실패:", error.message);
     res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
   }
 };

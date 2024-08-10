@@ -36,8 +36,8 @@ export const setScaleResponseDTO = (scale) => ({
   
   
   // 문제 수정 응답 DTO
-  export const editProblemResponseDTO = (message) => ({
-    message,
+  export const editProblemResponseDTO = () => ({
+    message: "문제 수정 성공",
   });
   
   // 공통 에러 응답 DTO

@@ -60,22 +60,88 @@ export const ProblemModel = {
   },
 
 
-  findTypesByProblemId: async (problemId) => {
+
+  // 문제 업데이트
+  updateProblem: async (problemId, problemText, answerText) => {
     try {
-      const [results] = await pool.query(sql.findTypesByProblemId, [problemId]);
-      return results;
+      await pool.query(sql.updateProblem, [problemText, answerText, problemId]);
     } catch (error) {
-      console.error("유형 조회 실패:", error.message);
-      throw new Error("유형 조회 실패");
+      console.error("문제 텍스트 및 정답 업데이트 실패:", error.message);
+      throw new Error("문제 텍스트 및 정답 업데이트 실패");
+    }
+  },
+
+  updateProblemImages: async (problemId, problemImageUrl, solutionImageUrl, passageImageUrl) => {
+    try {
+      await pool.query(sql.updateProblemImages, [
+        problemImageUrl || null,
+        solutionImageUrl || null,
+        passageImageUrl || null,
+        problemId,
+      ]);
+    } catch (error) {
+      console.error("이미지 업데이트 실패:", error.message);
+      throw new Error("이미지 업데이트 실패");
+    }
+  },
+
+  deleteAdditionalProblemImages: async (problemId) => {
+    try {
+      await pool.query(sql.deleteAdditionalProblemImages, [problemId]);
+    } catch (error) {
+      console.error("추가 이미지 삭제 실패:", error.message);
+      throw new Error("추가 이미지 삭제 실패");
+    }
+  },
+
+  addAdditionalProblemImage: async (problemId, photoUrl) => {
+    try {
+      await pool.query(sql.addAdditionalProblemImage, [problemId, photoUrl]);
+    } catch (error) {
+      console.error("추가 이미지 삽입 실패:", error.message);
+      throw new Error("추가 이미지 삽입 실패");
+    }
+  },
+
+  deleteProblemTypeAssignment: async (problemId) => {
+    try {
+      await pool.query(sql.deleteProblemTypeAssignment, [problemId]);
+    } catch (error) {
+      console.error("유형 할당 삭제 실패:", error.message);
+      throw new Error("유형 할당 삭제 실패");
+    }
+  },
+
+  addProblemTypeAssignment: async (problemId, typeId) => {
+    try {
+      await pool.query(sql.addProblemTypeAssignment, [problemId, typeId]);
+    } catch (error) {
+      console.error("유형 할당 추가 실패:", error.message);
+      throw new Error("유형 할당 추가 실패");
+    }
+  },
+
+  findProblemTypeIdByNameAndLevel: async (typeName, typeLevel) => {
+    try {
+      const [results] = await pool.query(sql.findProblemTypeIdByNameAndLevel, [typeName, typeLevel]);
+      return results[0] ? results[0].type_id : null;
+    } catch (error) {
+      console.error("유형 ID 조회 실패:", error.message);
+      throw new Error("유형 ID 조회 실패");
     }
   },
   
-  update: async (problemId, problemData) => {
+  updateProblemImages: async (problemId, problemImageUrl, solutionImageUrl, passageImageUrl) => {
     try {
-      const { problemText, problemType } = problemData;
-      await pool.query(sql.updateProblem, [problemText, problemId]);
+      await pool.query(sql.updateProblemImages, [
+        problemImageUrl || null,
+        solutionImageUrl || null,
+        passageImageUrl || null,
+        problemId,
+      ]);
     } catch (error) {
-      throw new Error("문제 수정 실패");
+      console.error("이미지 업데이트 실패:", error.message);
+      throw new Error("이미지 업데이트 실패");
     }
   },
 
