@@ -225,53 +225,48 @@ paths:
               type: integer
               description: 폴더 ID
               example: 1
-            folderName:
-              type: string
-              description: 폴더 이름
-              example: 수학
+            userId:
+              type: integer
+              description: 사용자 ID
+              example: 1
             subscriptionPlan:
-              type: string
-              example: "basic"
+              type: boolean
+              description: 구독 계획
+              example: true
             problemText:
                type: string
-               description: subscriptionPlan이 basic일 시 ""
-               example: ""
+               description: 문제 텍스트
+               example: "2+4"
             answer:
               type: string
               description: 문제 정답
-              example: 3
+              example: "6"
             mainCategory:
               type: string
-              description: 대분류 유형 선택 하지 않을 시 ""
-              example: 수학
+              description: 대분류
+              example: "수학"
             category:
               type: string
-              description: 중분류 유형 선택 하지 않을 시 ""
-              example: 미적분
+              description: 중분류
+              example: "미적분"
             subCategory:
               type: string
-              description: 소분류 유형 선택 하지 않을 시 ""
-              example: 함수의 극한
-            problemImage:
-              type: string
-              format: uri
-              description: mulitpart/form 포맷
-              example: 문제 이미지 URL
-            solutionImage:
-              type: string
-              format: uri
-              description: mulitpart/form 포맷, 선택하지 않을 시 ""
-              example: 풀이 파일명
-            passageImage:
-              type: string
-              format: uri
-              description: mulitpart/form 포맷, 선택하지 않을 시 ""
-              example: 지문 이미지 URL
-            additionalProblemImage:
-              type: string
-              format: uri
-              description: mulitpart/form 포맷, 선택하지 않을 시 ""
-              example: 추가 문제 이미지 URL       
+              description: 소분류
+              example: "함수의 극한"
+            photos:
+              type: array
+              items:
+                type: object
+                properties:
+                  photoUrl:
+                    type: string
+                    format: uri
+                    description: 사진 URL
+                    example: "http://example.com/photo1.jpg"
+                  photoType:
+                    type: string
+                    description: 사진 유형
+                    example: "문제"     
                
       responses:
         '200':

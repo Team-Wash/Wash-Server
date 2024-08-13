@@ -26,9 +26,8 @@ export const sql = {
       subscription
     WHERE 
       user_id = ? AND status = '구독' AND NOW() BETWEEN start_date AND end_date
-  `
-  ,
-    findProblemById: `
+  `,
+  findProblemById: `
     SELECT *
     FROM 
       problem
@@ -107,9 +106,53 @@ findProblemTypeIdByNameAndLevel: `
   SELECT type_id 
   FROM problemtype 
   WHERE type_name = ? AND type_level = ?
-`,
+`,  
+  addProblem: `
+    INSERT INTO problem (
+      folder_id, user_id, problem_text, answer, status,
+      correct_count, incorrect_count, order_value, memo
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `,
+  addPhotos: `
+    INSERT INTO photo (problem_id, photo_url, photo_type)
+    VALUES ?
+  `,
+  addProblemTypeAssignment: `
+    INSERT INTO PROBLEMTYPEASSIGNMENT (problem_id, type_id)
+    VALUES (?, ?)
+  `,
+  addProblemTypeAssignments: `
+    INSERT INTO PROBLEMTYPEASSIGNMENT (problem_id, type_id)
+    VALUES ?
+  `,
 
+  getMainTypes: `
+    SELECT type_id, type_name FROM PROBLEMTYPE
+    WHERE type_level = 1
+  `,
 
-  addProblem: 'INSERT INTO problem (folder_id, folder_name, subscription_plan, problem_text, answer, main_category, category, sub_category, problem_image, solution_image, passage_image, additional_problem_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-  };
-  
+  getMidTypes: `
+    SELECT type_id, type_name FROM PROBLEMTYPE
+    WHERE parent_type_id = ? AND type_level = 2
+  `,
+
+  getSubTypes: `
+    SELECT type_id, type_name FROM PROBLEMTYPE
+    WHERE parent_type_id = ? AND type_level = 3
+  `,
+
+  addMainType: `
+    INSERT INTO PROBLEMTYPE (type_name, type_level) 
+    VALUES (?, 1)
+  `,
+
+  addMidType: `
+    INSERT INTO PROBLEMTYPE (type_name, parent_type_id, type_level) 
+    VALUES (?, ?, 2)
+  `,
+
+  addSubType: `
+    INSERT INTO PROBLEMTYPE (type_name, parent_type_id, type_level) 
+    VALUES (?, ?, 3)
+  `,
+};

@@ -96,7 +96,7 @@ paths:
                     type: string
                     example: "Invalid request"            
   
-  /users/login/naver: 
+  /auth/naver: 
     post:
       tags:
         - 로그인
@@ -139,7 +139,7 @@ paths:
                     type: string
                     example: "Invalid request"            
 
-  /users/login/kakao:
+  /auth/kakao:
     post:
       tags:
         - 로그인
@@ -183,7 +183,7 @@ paths:
                     type: string
                     example: "Invalid request"
 
-  /users/login/refresh:
+  /auth/refresh:
     post:
       tags:
         - 로그인
