@@ -1,111 +1,49 @@
-// auth.service.js
-import axios from "axios";
-import jwt from "jsonwebtoken";
-import { getUserBySocialId, signUp, updateRefreshToken } from "./auth.model.js";
+// srcs/auth/auth.service.js
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
+import { getUserBySocialId, signUp, updateRefreshToken } from './auth.model.js';
+import { generateTokens } from '../utils/jwt.utils.js';
 
-const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
+const { JWT_REFRESH_SECRET } = process.env;
 
-const generateTokens = (userId) => {
-    const accessToken = jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "1h" });
-    const refreshToken = jwt.sign({ id: userId }, JWT_REFRESH_SECRET, { expiresIn: "30d" });
-    return { accessToken, refreshToken };
-};
-
-// 액세스 토큰로 유저아이디 반환
-const getUserIdFromAccessToken = (accessToken) => {
+const authenticateWithProvider = async (token, url, provider) => {
     try {
-        const decoded = jwt.verify(accessToken, JWT_SECRET);
-        return decoded.id;
-    } catch (error) {
-        throw new Error('유효하지 않거나 만료된 액세스 토큰');
-    }
-};
-
-const kakaoLogin = async (kakaoToken) => {
-    try {
-        const result = await axios.get("https://kapi.kakao.com/v2/user/me", {
-            headers: { Authorization: `Bearer ${kakaoToken}` },
+        const { data } = await axios.get(url, {
+            headers: { Authorization: `Bearer ${token}` }
         });
 
-        const { data } = result;
-        const { nickname: name } = data.properties;
-        const kakaoId = data.id;
-
-        if (!name || !kakaoId) throw new Error("KEY_ERROR");
-
-        let user = await getUserBySocialId(kakaoId, "kakao");
-        let accessToken, refreshToken;
-        let userId;
-
-        if (!user) {
-            userId = await signUp(name, kakaoId, "kakao"); 
-            ({ accessToken, refreshToken } = generateTokens(userId)); 
-            await updateRefreshToken(userId, refreshToken);
-        } else {
-            userId = user.user_id;
-            ({ accessToken, refreshToken } = generateTokens(userId)); 
-            await updateRefreshToken(userId, refreshToken);
+        let providerId, name;
+        if (provider === 'kakao') {
+            providerId = data.id;
+            name = data.properties.nickname;
+        } else if (provider === 'naver') {
+            providerId = data.response.id;
+            name = data.response.name;
         }
 
+        if (!providerId || !name) throw new Error("KEY_ERROR");
+
+        let user = await getUserBySocialId(providerId, provider);
+        const userId = user ? user.user_id : await signUp(name, providerId, provider);
+        const { accessToken, refreshToken } = generateTokens(userId, providerId);
+
+        await updateRefreshToken(userId, refreshToken);
         return { accessToken, refreshToken };
     } catch (error) {
-        console.error("Kakao login error:", error);
-        throw new Error("Kakao login failed");
+        console.error(`${provider} login error:`, error);
+        throw new Error(`${provider} login failed`);
     }
 };
 
-
-
-const naverLogin = async (naverToken) => {
-    try {
-        const result = await axios.get("https://openapi.naver.com/v1/nid/me", {
-            headers: { Authorization: `Bearer ${naverToken}` },
-        });
-        console.log("Naver API 응답 데이터:", result.data);
-
-        const { response } = result.data;
-        const { name, id: naverId } = response;
-
-        if (!name || !naverId) {
-            throw new Error("KEY_ERROR");
-        }
-
-        let user = await getUserBySocialId(naverId, "naver");
-        let accessToken, refreshToken;
-
-        if (!user) {
-            const userId = await signUp(name, naverId, "naver");
-            ({ accessToken, refreshToken } = generateTokens(userId));
-            await updateRefreshToken(user.user_id, refreshToken);
-        } else {
-            ({ accessToken, refreshToken } = generateTokens(user.user_id));
-            await updateRefreshToken(user.user_id, refreshToken);
-        }
-
-        return { accessToken, refreshToken };
-    } catch (error) {
-        console.error("Naver login error:", error);
-        throw new Error("Naver login failed");
-    }
-};
-
-
-
+const kakaoLogin = (token) => authenticateWithProvider(token, "https://kapi.kakao.com/v2/user/me", "kakao");
+const naverLogin = (token) => authenticateWithProvider(token, "https://openapi.naver.com/v1/nid/me", "naver");
 
 const refreshTokens = async (refreshToken) => {
     try {
-        console.log("Received refresh token:", refreshToken);
-        const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-        const userId = decoded.id;
-        console.log("Decoded userId:", userId);
-
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId);
-        console.log("access token 생성:", accessToken);
-        console.log("refresh token 생성:", newRefreshToken);
+        const { id: userId, socialId } = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId, socialId);
 
         await updateRefreshToken(userId, newRefreshToken);
-        console.log("refreshToken 업데이트 완료");
-
         return { accessToken, newRefreshToken };
     } catch (error) {
         console.error("Error in refreshTokens:", error);
@@ -113,4 +51,4 @@ const refreshTokens = async (refreshToken) => {
     }
 };
 
-export { kakaoLogin, naverLogin, refreshTokens, getUserIdFromAccessToken, generateTokens };
+export { kakaoLogin, naverLogin, refreshTokens };

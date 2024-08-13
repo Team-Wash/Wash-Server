@@ -11,12 +11,11 @@ import {
   userLogoutDTO,
   patchProfileResponseDTO,
 } from "./user.response.dto.js";
-import { getUserId } from "../auth/auth.controller.js";
 
 //유저 정보 가져오기
 export const getInfo = async (req, res) => {
   try {
-    const userId = await getUserId(req);
+    const userId = req.userId;
     const userInfo = await UserService.getInfo(userId);
     if (userInfo) {
       res.send(response(status.SUCCESS, getInfoResponseDTO(userInfo)));
@@ -36,7 +35,7 @@ export const getInfo = async (req, res) => {
 //닉네임 변경
 export const patchNickname = async (req, res) => {
   try {
-    const userId = await getUserId(req);
+    const userId = req.userId; 
     const nicknameData = req.body.newNickname;
     await UserService.editNickname(userId, nicknameData);
     res.send(
@@ -50,7 +49,7 @@ export const patchNickname = async (req, res) => {
 //회원 탈퇴 (softdelete - status 변경)
 export const deleteUser = async (req, res) => {
   try {
-    const userId = await getUserId(req);
+    const userId = req.userId;
     await UserService.inactiveUser(userId);
     res.send(
       response(status.SUCCESS, patchUserStatusrResponseDTO("비활성화 성공"))
@@ -63,7 +62,7 @@ export const deleteUser = async (req, res) => {
 //로그아웃
 export const userLogout = async (req, res) => {
   try {
-    const userId = await getUserId(req);
+    const userId = req.userId;
     await UserService.logoutUser(userId);
     res.send(response(status.SUCCESS, userLogoutDTO("로그아웃 성공")));
   } catch (error) {
@@ -97,7 +96,7 @@ export const loginUser = async (req, res) => {
 //프로필 사진 변경
 export const patchProfile = async (req, res) => {
   try {
-    const userId = await getUserId(req);
+    const userId = req.userId;
     const profileURL = req.body.profileURL;
     await UserService.editProfile(userId, profileURL);
     res.send(

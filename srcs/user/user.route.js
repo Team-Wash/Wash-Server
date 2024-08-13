@@ -8,13 +8,17 @@ import {
   loginUser,
   patchProfile,
 } from "./user.controller.js";
+import authenticateToken from "../../config/jwt.middleware.js";
 
-export const userRotuer = express.Router();
+export const userRouter = express.Router();
 
-userRotuer.get("/info", getInfo);
-userRotuer.patch("/info/nickname", patchNickname);
-userRotuer.patch("/delete", deleteUser);
-userRotuer.patch("/logout", userLogout);
-userRotuer.post("/login/signUp", signupUser);
-userRotuer.post("/login/general", loginUser);
-userRotuer.patch("/info/profileImage", patchProfile);
+userRouter.use(authenticateToken);
+
+userRouter.get("/info", getInfo);
+userRouter.patch("/info/nickname", patchNickname);
+userRouter.patch("/delete", deleteUser);
+userRouter.patch("/logout", userLogout);
+userRouter.patch("/info/profileImage", patchProfile);
+
+userRouter.post("/login/signUp", signupUser);
+userRouter.post("/login/general", loginUser);

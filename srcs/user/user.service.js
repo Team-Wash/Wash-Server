@@ -12,6 +12,7 @@ export const UserService = {
       }
       return userInfo;
     } catch (error) {
+      console.error("getInfo Error:", error); 
       throw new BaseError(status.BAD_REQUEST, "회원 조회 실패");
     }
   },

@@ -1,13 +1,11 @@
-// auth.route.js
+// srcs/auth/auth.route.js
 import express from "express";
 import { handleKakaoLogin, handleNaverLogin, handleTokenRefresh } from "./auth.controller.js";
 
-const router = express.Router();
+const authRouter = express.Router();
 
-router.post('/kakao', handleKakaoLogin);
-router.post('/naver', handleNaverLogin);
-router.post('/refresh', handleTokenRefresh);
+authRouter.post('/kakao', handleKakaoLogin);
+authRouter.post('/naver', handleNaverLogin);
+authRouter.post('/refresh', handleTokenRefresh);
 
-const authRoutes = router; 
-
-export default authRoutes;
+export default authRouter;
