@@ -54,6 +54,10 @@ export const status = {
     code: "COMMON004",
     message: "금지된 요청입니다.",
   },
-
-
+  NOT_FOUND: {
+    status: StatusCodes.NOT_FOUND,
+    isSuccess: false,
+    code: "COMMON005",
+    message: "데이터를 찾을 수 없습니다.",
+  },
 };

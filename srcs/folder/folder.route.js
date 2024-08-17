@@ -1,7 +1,10 @@
 import express from "express";
+import authenticateToken from "../../config/jwt.middleware.js";
 import { getAllFolders, orderFolders, renameFolder, deleteFolder, getFolderProblems, addFolder } from "./folder.controller.js";
 
 export const folderRouter = express.Router();
+
+// folderRouter.use(authenticateToken)
 
 folderRouter.get("/", getAllFolders);
 folderRouter.patch("/order", orderFolders);

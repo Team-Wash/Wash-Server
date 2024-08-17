@@ -54,54 +54,53 @@ export const ProblemService = {
     }
   },
 
-  getMainTypes: async () => {
+  getMainTypes: async (userId) => {
     try {
-      const mainTypes = await ProblemModel.getMainTypes();
+      const mainTypes = await ProblemModel.getMainTypes(userId);
       return mainTypes;
     } catch (error) {
       throw new BaseError(status.BAD_REQUEST, "대분류 조회 실패");
     }
   },
 
-  getMidTypes: async (parentTypeId) => {
+  getMidTypes: async (parentTypeId, userId) => {
     try {
-      const midTypes = await ProblemModel.getMidTypes(parentTypeId);
+      const midTypes = await ProblemModel.getMidTypes(parentTypeId, userId);
       return midTypes;
     } catch (error) {
       throw new BaseError(status.BAD_REQUEST, "중분류 조회 실패");
     }
   },
 
-  getSubTypes: async (parentTypeId) => {
+  getSubTypes: async (parentTypeId, userId) => {
     try {
-      const subTypes = await ProblemModel.getSubTypes(parentTypeId);
+      const subTypes = await ProblemModel.getSubTypes(parentTypeId, userId);
       return subTypes;
     } catch (error) {
       throw new BaseError(status.BAD_REQUEST, "소분류 조회 실패");
     }
   },
 
-  addMainType: async (typeName) => {
+  addProblemType: async (typeName, parentTypeId, typeLevel, userId) => {
     try {
-      await ProblemModel.addMainType(typeName);
+      await ProblemModel.addProblemType(typeName, parentTypeId, typeLevel, userId);
     } catch (error) {
-      throw new BaseError(status.BAD_REQUEST, "대분류 추가 실패");
+      if (typeLevel === 1) {
+        throw new BaseError(status.BAD_REQUEST, "대분류 추가 실패");
+      } else if (typeLevel === 2) {
+        throw new BaseError(status.BAD_REQUEST, "중분류 추가 실패");
+      } else if (typeLevel === 3) {
+        throw new BaseError(status.BAD_REQUEST, "소분류 추가 실패");
+      }
     }
   },
 
-  addMidType: async (typeName, parentTypeId) => {
+  deleteProblem: async (problemId, userId) => {
     try {
-      await ProblemModel.addMidType(typeName, parentTypeId);
+      const deleted = await ProblemModel.delete(problemId, userId);
+      return deleted;
     } catch (error) {
-      throw new BaseError(status.BAD_REQUEST, "중분류 추가 실패");
-    }
-  },
-
-  addSubType: async (typeName, parentTypeId) => {
-    try {
-      await ProblemModel.addSubType(typeName, parentTypeId);
-    } catch (error) {
-      throw new BaseError(status.BAD_REQUEST, "소분류 추가 실패");
+      throw new BaseError(status.BAD_REQUEST, "문제 삭제 실패");
     }
   },
 

@@ -184,75 +184,74 @@ paths:
                     type: string
                     example: "잘못된 요청 본문입니다."
 
-  /studies/folders/{folderId}/problems/{problemId}/check-answer:
-    post:
-      summary: 정답 확인하기
-      description: 사용자가 정답을 확인하고 맞췄는지 기록합니다.
-      tags:
-        - 학습하기
-      parameters:
-        - name: folderId
-          in: path
-          required: true
+/studies/folders/check-answer:
+  post:
+    summary: 정답 확인하기
+    description: 사용자가 정답을 확인하고 맞췄는지 기록합니다.
+    tags:
+      - 학습하기
+    requestBody:
+      required: true
+      content:
+        application/json:
           schema:
-            type: string
-            description: 폴더 ID
-        - name: problemId
-          in: path
-          required: true
-          schema:
-            type: string
-            description: 문제 ID
-        - name: swipeDirection
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - right
-              - left
-            description: 스와이프 방향 ('right'는 정답, 'left'는 정답이 아님)
-      responses:
-        '200':
-          description: 정답 확인 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    description: 문제 풀이 상태 (예- '미완료', '맞은 문제', '틀린 문제')
-                  correctAnswer:
-                    type: string
-                    description: 실제 정답
-        '400':
-          description: 잘못된 요청
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "잘못된 요청 본문입니다."
-        '404':
-          description: 찾을 수 없음
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "데이터를 찾을 수 없습니다."
-        '500':
-          description: 서버 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "서버 오류 발생"
+            properties:
+              folderId:
+                type: string
+                description: 폴더 ID
+                example: "12345"
+              problemId:
+                type: string
+                description: 문제 ID
+                example: "67890"
+              swipeDirection:
+                type: string
+                enum:
+                  - right
+                  - left
+                description: 스와이프 방향 ('right'는 정답, 'left'는 정답이 아님)
+                example: right
+    responses:
+      '200':
+        description: 정답 확인 성공
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: 문제 풀이 상태 (예- '미완료', '맞은 문제', '틀린 문제')
+                correctAnswer:
+                  type: string
+                  description: 실제 정답
+      '400':
+        description: 잘못된 요청
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "잘못된 요청 본문입니다."
+      '404':
+        description: 찾을 수 없음
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "데이터를 찾을 수 없습니다."
+      '500':
+        description: 서버 오류
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "서버 오류 발생"

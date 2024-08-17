@@ -20,12 +20,29 @@ paths:
                 items:
                   type: object
                   properties:
-                    folderId:
+                    isSuccess:
+                      type: boolean
+                      example: true
+                    code:
+                      type: integer
+                      example: 2000
+                    message:
                       type: string
-                      description: 폴더 ID
-                    folderName:
-                      type: string
-                      description: 폴더 이름
+                      example: "success!"
+                    result:
+                      type: array
+                      description: 폴더 목록 데이터
+                      items:
+                        type: object
+                        properties:
+                          folderId:
+                            type: integer
+                            description: 폴더 ID
+                            example: 1
+                          folderName:
+                            type: string
+                            description: 폴더 이름
+                            example: "수학"
         '400':
           description: 잘못된 요청
           content:
@@ -33,7 +50,76 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
                   message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
+    
+    post:
+      summary: 폴더 추가하기
+      description: 새로운 폴더를 추가합니다
+      tags:
+        - 홈
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folderName:
+                  type: string
+                  description: 생성할 폴더의 이름
+                  example: "새 폴더"
+      responses:
+        '200':
+          description: 폴더 추가 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "폴더 추가 성공"
+                  result:
+                    type: object
+                    properties:
+                      folderId:
+                        type: integer
+                        description: 생성된 폴더의 ID
+                        example: 123
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
                     type: string
                     example: "잘못된 요청 본문"
 
@@ -43,16 +129,21 @@ paths:
       description: 폴더 디스플레이 순서를 조정합니다.
       tags:
         - 홈
-      parameters:
-        - name: order
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-              description: 폴더 ID
-            description: 새 폴더 순서 배열 (배열의 순서가 새로운 폴더 배치를 나타냅니다.)
+      requestBody:
+        description: 폴더 순서 조정을 위한 데이터
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: array
+                  items:
+                    type: integer
+                    description: 폴더 ID
+                  description: 폴더 ID 배열, 원하는 순서대로 나열
+                  example: [3, 1, 2]
       responses:
         '200':
           description: 폴더 순서 조정 성공
@@ -61,9 +152,37 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
                   message:
                     type: string
+                    example: "success!"
+                  result:
+                    type: string
                     example: "폴더 순서 조정 성공"
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"     
 
   /folders/{folderId}:
     patch:
@@ -76,14 +195,21 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
             description: 폴더 ID
-        - name: folderName
-          in: query
-          required: true
-          schema:
-            type: string
-            description: 수정할 폴더 이름
+            example: 1
+      requestBody:
+        description: 폴더 이름 수정을 위한 데이터
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folderName:
+                  type: string
+                  description: 수정할 폴더 이름
+                  example: "새 폴더 이름"
       responses:
         '200':
           description: 폴더 이름 수정 성공
@@ -92,7 +218,16 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
                   message:
+                    type: string
+                    example: "success!"
+                  result:
                     type: string
                     example: "폴더 이름 수정 성공"
         '400':
@@ -102,7 +237,16 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
                   message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
                     type: string
                     example: "잘못된 요청 본문"
         '404':
@@ -112,14 +256,22 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON005"
                   message:
                     type: string
                     example: "데이터를 찾을 수 없습니다."
-
-
+                  result:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+                  
     delete:
       summary: 폴더 삭제하기
-      description: 폴더를 삭제하면 그 안에 있는 문제들도 모두 삭제됩니다.
+      description: 폴더 ID를 사용해 폴더를 삭제한다.
       tags:
         - 홈
       parameters:
@@ -127,19 +279,48 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
             description: 폴더 ID
+            example: 1
       responses:
-        '204':
-          description: 폴더 및 폴더 내 문제 삭제 성공
+        '200':
+          description: 폴더 삭제 성공
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
                   message:
                     type: string
-                    example: "폴더 및 폴더 내 문제 삭제 성공"
+                    example: "success!"
+                  result:
+                    type: string
+                    example: "폴더 삭제 성공"
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
         '404':
           description: 찾을 수 없음
           content:
@@ -147,7 +328,16 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON005"
                   message:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+                  result:
                     type: string
                     example: "데이터를 찾을 수 없습니다."
 
@@ -162,7 +352,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
             description: 폴더 ID
       responses:
         '200':
@@ -172,24 +362,59 @@ paths:
               schema:
                 type: object
                 properties:
-                  folderName:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
                     type: string
-                    description: 폴더 이름
-                  problems:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        problemId:
-                          type: string
-                          description: 문제 ID
-                        problemText:
-                          type: string
-                          description: 문제 텍스트
-                        problemImage:
-                          type: string
-                          format: uri
-                          description: 문제 이미지 URL
+                    example: "success!"
+                  result:
+                    type: object
+                    properties:
+                      folderName:
+                        type: string
+                        description: 폴더 이름
+                        example: "수학"
+                      problems:
+                        type: array
+                        description: 폴더 내 문제 목록
+                        items:
+                          type: object
+                          properties:
+                            problemId:
+                              type: integer
+                              description: 문제 ID
+                              example: 1
+                            problemText:
+                              type: string
+                              description: 문제 텍스트
+                              example: "2+4"
+                            problemImage:
+                              type: string
+                              description: 문제 사진 URL
+                              example: "http://example.com/image.png"
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
         '404':
           description: 찾을 수 없음
           content:
@@ -197,77 +422,97 @@ paths:
               schema:
                 type: object
                 properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON005"
                   message:
                     type: string
                     example: "데이터를 찾을 수 없습니다."
-  /folders/problems:
+                  result:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+
+  /problems:
     post:
       tags:
         - 홈
       summary: 문제 추가하기
       description: 문제 추가하기
-      parameters:
-      - name: token
-        in: header
+      requestBody:
+        description: 문제 추가를 위한 데이터
         required: true
-        schema:
-          properties:
-            Authorization:
-              type: string
-              description: 헤더에 토큰을 입력
-
-      - name: addProblem
-        in: body
-        required: true
-        schema:
-          properties:
-            folderId:
-              type: integer
-              description: 폴더 ID
-              example: 1
-            userId:
-              type: integer
-              description: 사용자 ID
-              example: 1
-            subscriptionPlan:
-              type: boolean
-              description: 구독 계획
-              example: true
-            problemText:
-               type: string
-               description: 문제 텍스트
-               example: "2+4"
-            answer:
-              type: string
-              description: 문제 정답
-              example: "6"
-            mainCategory:
-              type: string
-              description: 대분류
-              example: "수학"
-            category:
-              type: string
-              description: 중분류
-              example: "미적분"
-            subCategory:
-              type: string
-              description: 소분류
-              example: "함수의 극한"
-            photos:
-              type: array
-              items:
-                type: object
-                properties:
-                  photoUrl:
-                    type: string
-                    format: uri
-                    description: 사진 URL
-                    example: "http://example.com/photo1.jpg"
-                  photoType:
-                    type: string
-                    description: 사진 유형
-                    example: "문제"     
-               
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folderId:
+                  type: integer
+                  description: 폴더 ID
+                  example: 1
+                problemText:
+                  type: string
+                  description: 문제 텍스트
+                  example: "2+4"
+                answer:
+                  type: string
+                  description: 문제 정답
+                  example: "6"
+                status:
+                  type: string
+                  description: 문제의 현재 상태
+                  example: "작성"
+                  enum:
+                    - "수정"
+                    - "삭제"
+                    - "작성"
+                correctCount:
+                  type: integer
+                  description: 정답 횟수
+                  example: 10
+                incorrectCount:
+                  type: integer
+                  description: 오답 횟수
+                  example: 2
+                orderValue:
+                  type: integer
+                  description: 문제 순서
+                  example: 1
+                memo:
+                  type: string
+                  description: 메모
+                  example: "문제에 대한 추가 설명"
+                mainTypeId:
+                  type: integer
+                  description: 대분류 유형 ID
+                  example: 1
+                midTypeId:
+                  type: integer
+                  description: 중분류 유형 ID
+                  example: 2
+                subTypeIds:
+                  type: array
+                  items:
+                    type: integer
+                  description: 소분류 유형 ID 배열
+                  example: [3, 4]
+                photos:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      photoUrl:
+                        type: string
+                        format: uri
+                        description: 사진 URL
+                        example: "http://example.com/photo1.jpg"
+                      photoType:
+                        type: string
+                        description: 사진 유형
+                        example: "문제"           
       responses:
         '200':
           description: 문제 추가 성공
@@ -276,22 +521,242 @@ paths:
               schema:
                 type: object
                 properties:
-                  issuccess:
+                  isSuccess:
                     type: boolean
                     example: true
+                  code:
+                    type: integer
+                    example: 2000
                   message:
                     type: string
-                    example: 문제 추가하기 성공             
+                    example: "success!"
+                  result:
+                    type: string
+                    example: "문제 추가 성공"
         '400':
-          description: 문제 추가하기 실패
+          description: 잘못된 요청
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  errorMessage:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
                     type: string
-                    example: Invalid request
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
+
+  /problems/types:
+    post:
+      tags:
+        - 홈
+      summary: 문제 유형 추가
+      description: >
+        문제 유형을 추가합니다
+        
+        - `typeLevel`이 `1`일 경우: 대분류 문제 유형 추가
+        - `typeLevel`이 `2`일 경우: 중분류 문제 유형 추가 (`parentTypeId` 필요)
+        - `typeLevel`이 `3`일 경우: 소분류 문제 유형 추가 (`parentTypeId` 필요)
+      requestBody:
+        description: 문제 유형 추가 요청 본문
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                typeName:
+                  type: string
+                  description: 문제 유형 이름
+                  example: "국어"
+                parentTypeId:
+                  type: integer
+                  description: 상위 문제 유형의 ID (중분류와 소분류에서 필요)
+                  example: 1
+                typeLevel:
+                  type: integer
+                  description: 문제 유형 레벨
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                  example: 2
+      responses:
+        '200':
+          description: 문제 유형 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "success!"
+                  result:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                          typeId:
+                            type: integer
+                            description: 유형 ID
+                            example: 1
+                          typeName:
+                            type: string
+                            description: 대분류 이름
+                            example: "국어"
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
+        '404':
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON005"
+                  message:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+                  result:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+  
+  /problems/types/{typeLevel}:
+    get:
+      tags:
+        - 홈
+      summary: 문제 유형 조회
+      description: >
+        typeLevel 따라 문제 유형을 조회합니다.
+        
+        - `1`: 대분류 문제 유형 조회 (`parentTypeId` 필요 없음)
+        - `2`: 중분류 문제 유형 조회 (`parentTypeId` 쿼리 파라미터 필요)
+        - `3`: 소분류 문제 유형 조회 (`parentTypeId` 쿼리 파라미터 필요)
+      parameters:
+        - in: path
+          name: typeLevel
+          required: true
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+          description: >
+            조회할 문제 유형 ID:
+            - `1`: 대분류 문제 유형
+            - `2`: 중분류 문제 유형
+            - `3`: 소분류 문제 유형
+        - in: query
+          name: parentTypeId
+          required: false
+          schema:
+            type: integer
+          description: 상위 문제 유형의 ID
+      responses:
+        '200':
+          description: 문제 유형 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "success!"
+                  result:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                          typeId:
+                            type: integer
+                            description: 유형 ID
+                            example: 1
+                          typeName:
+                            type: string
+                            description: 대분류 이름
+                            example: "국어"
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
+        '404':
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON005"
+                  message:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+                  result:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
 
   /problems/search:
     get:
@@ -451,6 +916,77 @@ paths:
                 type: object
                 properties:
                   message:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+    delete:
+      summary: 문제 삭제하기
+      description: 문제 ID를 사용해 문제를 삭제한다.
+      tags:
+        - 홈
+      parameters:
+        - name: problemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: 문제 ID
+            example: 1
+      responses:
+        '200':
+          description: 문제 삭제 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "success!"
+                  result:
+                    type: string
+                    example: "문제 삭제 성공"
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON001"
+                  message:
+                    type: string
+                    example: "잘못된 요청입니다."
+                  result:
+                    type: string
+                    example: "잘못된 요청 본문"
+        '404':
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "COMMON005"
+                  message:
+                    type: string
+                    example: "데이터를 찾을 수 없습니다."
+                  result:
                     type: string
                     example: "데이터를 찾을 수 없습니다."
 

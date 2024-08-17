@@ -35,7 +35,8 @@ export const getInfo = async (req, res) => {
 //닉네임 변경
 export const patchNickname = async (req, res) => {
   try {
-    const userId = req.userId; 
+    console.log(req.body);
+    const userId = req.userId;
     const nicknameData = req.body.newNickname;
     await UserService.editNickname(userId, nicknameData);
     res.send(
@@ -84,6 +85,7 @@ export const signupUser = async (req, res) => {
 //로그인
 export const loginUser = async (req, res) => {
   try {
+    console.log(req.body);
     const loginInfo = req.body;
     const token = await UserService.loginGeneral(loginInfo);
     console.log(token.accessToken);

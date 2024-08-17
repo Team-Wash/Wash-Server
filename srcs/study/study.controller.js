@@ -51,8 +51,7 @@ export const getProblemById = async (req, res) => {
 
 export const checkAnswer = async (req, res) => {
   try {
-    const { folderId, problemId } = req.params;
-    const { swipeDirection } = req.query;
+    const { folderId, problemId, swipeDirection } = req.body;
     const result = await StudyService.checkAnswer(folderId, problemId, swipeDirection);
     res.send(response(status.SUCCESS, checkAnswerResponseDTO(result)));
   } catch (error) {

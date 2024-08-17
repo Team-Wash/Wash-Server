@@ -6,4 +6,4 @@ export const studyRouter = express.Router();
 studyRouter.get('/folders/:folderId', selectFolder);
 studyRouter.get('/folders/:folderId/progress', getProgress);
 studyRouter.get('/folders/:folderId/problems/:problemId', getProblemById);
-studyRouter.post('/folders/:folderId/problems/:problemId/check-answer', checkAnswer);
+studyRouter.post('/folders/check-answer', checkAnswer);

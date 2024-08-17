@@ -8,7 +8,7 @@ import { healthCheck } from "./srcs/utils/healthCheck.js";
 import { imageRouter } from "./srcs/utils/image/image.route.js";
 import { problemRouter } from "./srcs/problem/problem.route.js";
 import { studyRouter } from "./srcs/study/study.route.js";
-// import { folderRouter } from "./srcs/folder/folder.route.js";
+import { folderRouter } from "./srcs/folder/folder.route.js";
 import cors from "cors";
 import { userRouter } from "./srcs/user/user.route.js";
 import  authRouter  from "./srcs/auth/auth.route.js";
@@ -28,7 +28,7 @@ app.use(cors());
 app.use("/temp", tempRouter);
 app.use("/problems", problemRouter);
 app.use("/studies", studyRouter);
-// app.use("/folders", folderRouter);
+app.use("/folders", folderRouter);
 
 //health
 app.use("/health", healthCheck);

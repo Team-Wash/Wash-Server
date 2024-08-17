@@ -36,6 +36,8 @@ jobs:
           echo "GCLOUD_STORAGE_BUCKET=${{ secrets.GCLOUD_STORAGE_BUCKET }}" >> .env
           echo "KEY_FILE_NAME=${{ secrets.KEY_FILE_NAME }}" >> .env
           echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> .env
 
 
       - name: Login to DockerHub

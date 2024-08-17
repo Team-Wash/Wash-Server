@@ -126,54 +126,54 @@ export const ProblemModel = {
     }
   },
 
-  getMainTypes: async () => {
+  getMainTypes: async (userId) => {
     try {
-      const [results] = await pool.query(sql.getMainTypes);
+      const [results] = await pool.query(sql.getMainTypes, [userId]);
       return results;
     } catch (error) {
       throw new Error("대분류 조회 실패");
     }
   },
 
-  getMidTypes: async (parentTypeId) => {
+  getMidTypes: async (parentTypeId, userId) => {
     try {
-      const [results] = await pool.query(sql.getMidTypes, [parentTypeId]);
+      const [results] = await pool.query(sql.getMidTypes, [parentTypeId, userId]);
       return results;
     } catch (error) {
       throw new Error("중분류 조회 실패");
     }
   },
 
-  getSubTypes: async (parentTypeId) => {
+  getSubTypes: async (parentTypeId, userId) => {
     try {
-      const [results] = await pool.query(sql.getSubTypes, [parentTypeId]);
+      const [results] = await pool.query(sql.getSubTypes, [parentTypeId, userId]);
       return results;
     } catch (error) {
       throw new Error("소분류 조회 실패");
     }
   },
 
-  addMainType: async (typeName) => {
+  addProblemType: async (typeName, parentTypeId, typeLevel, userId) => {
     try {
-      await pool.query(sql.addMainType, [typeName]);
+      if (typeLevel === 1) {
+        await pool.query(sql.addProblemType, [typeName, null, typeLevel, userId]);
+      } else if (typeLevel === 2) {
+        await pool.query(sql.addProblemType, [typeName, parentTypeId, typeLevel, userId]);
+      } else if (typeLevel === 3) {
+        await pool.query(sql.addProblemType, [typeName, parentTypeId, typeLevel, userId]);
+      }
     } catch (error) {
-      throw new Error("대분류 추가 실패");
+      throw new Error(`문제 유형 추가 실패`);
     }
   },
 
-  addMidType: async (typeName, parentTypeId) => {
+  delete: async (problemId, userId) => {
     try {
-      await pool.query(sql.addMidType, [typeName, parentTypeId]);
+      console.log("Deleting problem with ID:", problemId, "for user:", userId);
+      const [result] = await pool.query(sql.deleteProblem, [problemId, userId]);
+      return result.affectedRows > 0;
     } catch (error) {
-      throw new Error("중분류 추가 실패");
-    }
-  },
-
-  addSubType: async (typeName, parentTypeId) => {
-    try {
-      await pool.query(sql.addSubType, [typeName, parentTypeId]);
-    } catch (error) {
-      throw new Error("소분류 추가 실패");
+      throw new Error("문제 삭제 실패");
     }
   },
   

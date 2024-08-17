@@ -69,33 +69,37 @@ export const sql = {
     VALUES ?
   `,
   addProblemTypeAssignment: `
-    INSERT INTO PROBLEMTYPEASSIGNMENT (problem_id, type_id)
+    INSERT INTO problemtypeassignment (problem_id, type_id)
     VALUES (?, ?)
   `,
   addProblemTypeAssignments: `
-    INSERT INTO PROBLEMTYPEASSIGNMENT (problem_id, type_id)
+    INSERT INTO problemtypeassignment (problem_id, type_id)
     VALUES ?
   `,
 
   getMainTypes: `
-    SELECT type_id, type_name FROM PROBLEMTYPE
-    WHERE type_level = 1
+    SELECT type_id, type_name FROM problemtype
+    WHERE type_level = 1 AND (user_id = ? OR user_id IS NULL)
   `,
 
   getMidTypes: `
-    SELECT type_id, type_name FROM PROBLEMTYPE
-    WHERE parent_type_id = ? AND type_level = 2
+    SELECT type_id, type_name FROM problemtype
+    WHERE parent_type_id = ? AND type_level = 2 AND (user_id = ? OR user_id IS NULL)
   `,
 
   getSubTypes: `
-    SELECT type_id, type_name FROM PROBLEMTYPE
-    WHERE parent_type_id = ? AND type_level = 3
+    SELECT type_id, type_name FROM problemtype
+    WHERE parent_type_id = ? AND type_level = 3 AND (user_id = ? OR user_id IS NULL)
   `,
 
-  addMainType: `
-    INSERT INTO PROBLEMTYPE (type_name, type_level) 
-    VALUES (?, 1)
-  `,
+  addProblemType: `
+  INSERT INTO problemtype (type_name, parent_type_id, type_level, user_id) 
+  VALUES (?, ?, ?, ?)
+`,
+
+deleteProblem: 'DELETE FROM problem WHERE problem_id = ? AND user_id = ?',
+
+};
 
   addMidType: `
     INSERT INTO PROBLEMTYPE (type_name, parent_type_id, type_level) 

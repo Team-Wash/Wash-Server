@@ -10,6 +10,7 @@ import {
   addProblemResponseDTO,
   problemTypeResponseDTO ,
   addProblemTypeResponseDTO,
+  deleteProblemResponseDTO,
   getStatisticIncorrectProblemDTO,
   getStatisticIncorrectTypeDTO,
   getStatisticIncorrectRatioDTO, 
@@ -67,11 +68,14 @@ export const editProblem = async (req, res) => {
   }
 };
 
-// 문제 등록
+// 문제 추가
 export const addProblem = async (req, res) => {
   try {
     const problemData = req.body;
     const { mainTypeId, midTypeId, subTypeIds } = problemData;
+
+    //problemData.userId = req.userId;
+    problemData.userId = 1;
 
     if (mainTypeId !== undefined && mainTypeId !== null && typeof mainTypeId !== 'number') {
       return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
@@ -93,62 +97,90 @@ export const addProblem = async (req, res) => {
       }
     }
     await ProblemService.addProblem(problemData);
-    res.send(response(status.SUCCESS, addProblemResponseDTO("문제 등록 성공")));
+    res.send(response(status.SUCCESS, addProblemResponseDTO("문제 추가 성공")));
   } catch (error) {
     res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
   }
 };
 
-// 대분류 문제 유형 조회
-export const getMainTypes = async (req, res) => {
+// 문제 유형 목록 조회
+export const getProblemTypes = async (req, res) => {
   try {
-    const mainTypes = await ProblemService.getMainTypes();
-    res.send(response(status.SUCCESS, problemTypeResponseDTO(mainTypes)));
+    const { typeLevel } = req.params;
+    const { parentTypeId } = req.query;
+    // const userId = req.userId;
+    const userId = 1;
+
+    let types;
+
+    if (typeLevel === '1') {
+      types = await ProblemService.getMainTypes(userId);
+    } else if (typeLevel === '2') {
+      if (!parentTypeId) {
+        return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
+      }
+      types = await ProblemService.getMidTypes(parentTypeId, userId);
+    } else if (typeLevel === '3') {
+      if (!parentTypeId) {
+        return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
+      }
+      types = await ProblemService.getSubTypes(parentTypeId, userId);
+    } else {
+      return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
+    }
+
+    if (types && types.length > 0) {
+      res.send(response(status.SUCCESS, problemTypeResponseDTO(types)));
+    } else {
+      res.send(response(status.NOT_FOUND, errorResponseDTO("데이터를 찾을 수 없습니다.")));
+    }
   } catch (error) {
     res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
   }
 };
 
-// 중분류 문제 유형 조회
-export const getMidTypes = async (req, res) => {
-  const { parentTypeId } = req.params;
+// 문제 유형 추가
+export const addProblemType = async (req, res) => {
   try {
-    const midTypes = await ProblemService.getMidTypes(parentTypeId);
-    res.send(response(status.SUCCESS, problemTypeResponseDTO(midTypes)));
+    const { typeName, parentTypeId, typeLevel } = req.body;
+    // const userId = req.userId;
+    const userId = 1;
+
+    if (typeLevel === 1) {
+      await ProblemService.addProblemType(typeName, null, typeLevel, userId);
+      res.send(response(status.SUCCESS, addProblemTypeResponseDTO("대분류 추가 성공")));
+    } else if (typeLevel === 2) {
+      if (!parentTypeId) {
+        return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
+      }
+      await ProblemService.addProblemType(typeName, parentTypeId, typeLevel, userId);
+      res.send(response(status.SUCCESS, addProblemTypeResponseDTO("중분류 추가 성공")));
+    } else if (typeLevel === 3) {
+      if (!parentTypeId) {
+        return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
+      }
+      await ProblemService.addProblemType(typeName, parentTypeId, typeLevel, userId);
+      res.send(response(status.SUCCESS, addProblemTypeResponseDTO("소분류 추가 성공")));
+    } else {
+      res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
+    }
   } catch (error) {
+    console.error("문제 유형 추가 중 에러:", error.message);
     res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
   }
 };
 
-// 소분류 문제 유형 조회
-export const getSubTypes = async (req, res) => {
-  const { parentTypeId } = req.params;
+export const deleteProblem = async (req, res) => {
   try {
-    const subTypes = await ProblemService.getSubTypes(parentTypeId);
-    res.send(response(status.SUCCESS, problemTypeResponseDTO(subTypes)));
-  } catch (error) {
-    res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
-  }
-};
-
-// 대분류 추가
-export const addMainType = async (req, res) => {
-  try {
-    const { typeName } = req.body;
-    await ProblemService.addMainType(typeName);
-    res.send(response(status.SUCCESS, addProblemTypeResponseDTO("대분류 추가 성공")));
-  } catch (error) {
-    console.error("대분류 추가 중 오류:", error.message);
-    res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
-  }
-};
-
-// 중분류 추가
-export const addMidType = async (req, res) => {
-  try {
-    const { typeName, parentTypeId } = req.body;
-    await ProblemService.addMidType(typeName, parentTypeId);
-    res.send(response(status.SUCCESS, addProblemTypeResponseDTO("중분류 추가 성공")));
+    const { problemId } = req.params;
+    // const userId = req.userId;
+    const userId = 1;
+    const deleted = await ProblemService.deleteProblem(problemId, userId);
+    if (deleted) {
+      res.send(response(status.SUCCESS, deleteProblemResponseDTO("문제 삭제 성공")));
+    } else {
+      res.send(response(status.NOT_FOUND, errorResponseDTO("데이터를 찾을 수 없습니다.")));
+    }
   } catch (error) {
     res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
   }

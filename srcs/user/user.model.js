@@ -38,12 +38,14 @@ export const UserModel = {
       const [result] = await pool.query(sql.checkIdOverlap, email);
       if (result.length === 0) {
         console.log(signupInfo.email);
+        console.log(signupInfo.password);
+        console.log(sql.postNewUser);
         await pool.query(sql.postNewUser, [
           signupInfo.email,
           signupInfo.password,
           "기본값",
           "active",
-          "00000000000",
+          "name",
         ]);
         return "회원가입 성공";
       } else {
@@ -94,6 +96,8 @@ export const UserModel = {
 
   updateProfile: async (userId, profileURL) => {
     try {
+      console.log(userId);
+      console.log(profileURL);
       await pool.query(sql.updateProfileSQL, [profileURL, userId]);
     } catch (error) {
       throw new Error("프로필변경 실패");

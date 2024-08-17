@@ -19,6 +19,3 @@ userRouter.patch("/info/nickname", patchNickname);
 userRouter.patch("/delete", deleteUser);
 userRouter.patch("/logout", userLogout);
 userRouter.patch("/info/profileImage", patchProfile);
-
-userRouter.post("/login/signUp", signupUser);
-userRouter.post("/login/general", loginUser);

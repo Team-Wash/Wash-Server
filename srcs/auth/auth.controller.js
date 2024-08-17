@@ -38,6 +38,7 @@ const handleTokenRefresh = async (req, res) => {
                 {}
             ));
         }
+        console.log("Received refreshToken:", refreshToken);
         const { accessToken, newRefreshToken } = await refreshTokens(refreshToken);
 
         res.setHeader("Authorization", `Bearer ${accessToken}`);

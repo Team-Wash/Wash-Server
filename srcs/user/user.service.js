@@ -12,7 +12,7 @@ export const UserService = {
       }
       return userInfo;
     } catch (error) {
-      console.error("getInfo Error:", error); 
+      console.error("getInfo Error:", error);
       throw new BaseError(status.BAD_REQUEST, "회원 조회 실패");
     }
   },
@@ -36,6 +36,7 @@ export const UserService = {
   postUser: async (signupInfo) => {
     try {
       const { email, password } = signupInfo;
+
       //이름, 아이디, 패스워드가 모두 있으면
       if (email && password) {
         const isSusccess = await UserModel.signup(signupInfo);

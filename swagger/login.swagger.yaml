@@ -4,28 +4,28 @@ info:
   version: 1.0.0
 
 paths:
-  /users/login/signUp:
+  /auth/login/signUp:
     post:
       tags:
         - 로그인
       summary: 회원가입
-      parameters:
-      - name: singUp
-        in: body
+      requestBody:
         required: true
-        schema:
-          properties:
-            email:
-              type: string
-              description: 가입하려는 이메일
-              example: dhrwodms@naver.com
-            password:
-              type: string
-              description: 가입 비밀번호
-              example: 1234
-            
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  description: 가입하려는 이메일
+                  example: dhrwodms@naver.com
+                password:
+                  type: string
+                  description: 가입 비밀번호
+                  example: 1234
+
       responses:
-        '200':
+        "200":
           description: 회원가입 성공
           content:
             application/json:
@@ -37,8 +37,8 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: 회원가입 성공      
-        '400':
+                    example: 회원가입 성공
+        "400":
           description: 계정 정보 가져오기 실패
           content:
             application/json:
@@ -49,27 +49,27 @@ paths:
                     type: string
                     example: "Invalid request"
 
-  /users/login/general:
+  /auth/login/general:
     post:
       tags:
         - 로그인
       summary: 일반 로그인
-      parameters:
-      - name: Login
-        in: body
+      requestBody:
         required: true
-        schema:
-          properties:
-            email:
-              type: string
-              description: 로그인하려는 이메일
-              example: dhrwodms@naver.com
-            password:
-              type: string
-              description: 로그인 비밀번호
-              example: 1234
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  description: 가입하려는 이메일
+                  example: dhrwodms@naver.com
+                password:
+                  type: string
+                  description: 가입 비밀번호
+                  example: 1234
       responses:
-        '200':
+        "200":
           description: 일반 로그인 성공
           content:
             application/json:
@@ -85,7 +85,7 @@ paths:
                   # result:
                   #   type: string
                   #   example: "${refreshToken}"
-        '400':
+        "400":
           description: 일반 로그인 실패
           content:
             application/json:
@@ -94,130 +94,182 @@ paths:
                 properties:
                   errorMessage:
                     type: string
-                    example: "Invalid request"            
-  
-  /auth/naver: 
-    post:
-      tags:
-        - 로그인
-      summary: 네이버 로그인
-      parameters:
-      - name: token
-        in: body
-        description: 로그인 후 받은 id 토큰을 입력합니다.
-        required: true
-        schema:
-          properties:
-            idToken:
-              type: string
-               
-      responses:
-        '200':
-          description: 네이버 로그인 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  issuccess:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: 네이버 로그인 성공
-                  result:
-                    type: string
-                    example: "${refreshToken}"
-        '400':
-          description: 네이버 로그인 실패
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  errorMessage:
-                    type: string
-                    example: "Invalid request"            
+                    example: "Invalid request"
 
   /auth/kakao:
     post:
       tags:
         - 로그인
       summary: 카카오 로그인
-      parameters:
-      - name: token
-        in: body
-        description: 로그인 후 받은 id 토큰을 입력합니다.
-        required: true
-        schema:
-          properties:
-            idToken:
-              type: string
-
       responses:
-        '200':
-          description: 카카오 로그인
+        "200":
+          description: 카카오 로그인 성공
+          headers:
+            Authorization:
+              description: "새로 발급된 액세스 토큰을 포함한 Authorization 헤더"
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  issuccess:
+                  isSuccess:
                     type: boolean
                     example: true
+                  code:
+                    type: integer
+                    example: 200
                   message:
                     type: string
-                    example: 카카오 로그인 성공
+                    example: kakao 로그인 성공
                   result:
-                    type: string
-                    example: "${refreshToken}"
-                  
-        '400':
+                    type: object
+                    properties:
+                      refreshToken:
+                        type: string
+                        example: "RefreshToken"
+        "400":
           description: 카카오 로그인 실패
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  errorMessage:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: integer
+                    example: 400
+                  message:
                     type: string
-                    example: "Invalid request"
-
-  /auth/refresh:
+                    example: kakao 로그인 실패
+                  result:
+                    type: object
+                    properties:
+                      refreshToken:
+                        type: string
+                        example: {}
+  /auth/naver:
     post:
       tags:
         - 로그인
-      summary: 토큰 재발급(임시)
-      parameters:
-      - name: token
-        in: header
-        description: accessToken을 입력합니다.
-        required: true
+      summary: 네이버 로그인
       responses:
-        '200':
-          description: 토큰 재발급
+        "200":
+          description: 네이버 로그인 성공
+          headers:
+            Authorization:
+              description: "새로 발급된 액세스 토큰을 포함한 Authorization 헤더"
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  issuccess:
+                  isSuccess:
                     type: boolean
                     example: true
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: naver 로그인 성공
+                  result:
+                    type: object
+                    properties:
+                      refreshToken:
+                        type: string
+                        example: "RefreshToken"
+        "400":
+          description: 네이버 로그인 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: naver 로그인 실패
+                  result:
+                    type: object
+                    properties:
+                      refreshToken:
+                        type: string
+                        example: {}
+
+  /auth/refresh:
+    post:
+      tags:
+        - 로그인
+      summary: 토큰 재발급
+      requestBody:
+        description: 리프레시 토큰을 포함한 요청 본문
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: "리프레시 토큰"
+      responses:
+        "200":
+          description: 토큰 재발급 성공
+          headers:
+            Authorization:
+              description: "새로 발급된 액세스 토큰을 포함한 Authorization 헤더"
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 200
                   message:
                     type: string
                     example: 토큰 재발급 성공
                   result:
-                    type: string
-                    example: "${refreshToken}"
-                  
-        '400':
+                    type: object
+                    properties:
+                      refreshToken:
+                        type: string
+                        example: "RefreshToken"
+        "400":
           description: 토큰 재발급 실패
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  errorMessage:
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: integer
+                    example: 400
+                  message:
                     type: string
-                    example: "Invalid request"
+                    example: 토큰 재발급 실패
+                  result:
+                    type: object
+                    properties:
+                      refreshToken:
+                        type: string
+                        example: {}
