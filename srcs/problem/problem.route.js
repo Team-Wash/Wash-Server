@@ -9,7 +9,7 @@ problemRouter.get("/search", searchProblems);
 problemRouter.get("/:problemId", getProblem);
 problemRouter.patch("/:problemId/edit", editProblem);
 
-// problemRouter.use(authenticateToken);
+problemRouter.use(authenticateToken);
 
 problemRouter.post("/", addProblem);
 problemRouter.get("/types/:typeLevel", getProblemTypes);

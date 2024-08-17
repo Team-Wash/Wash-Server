@@ -71,8 +71,7 @@ export const addProblem = async (req, res) => {
     const problemData = req.body;
     const { mainTypeId, midTypeId, subTypeIds } = problemData;
 
-    //problemData.userId = req.userId;
-    problemData.userId = 1;
+    problemData.userId = req.userId;
 
     if (mainTypeId !== undefined && mainTypeId !== null && typeof mainTypeId !== 'number') {
       return res.send(response(status.BAD_REQUEST, errorResponseDTO("잘못된 요청 본문")));
@@ -105,8 +104,7 @@ export const getProblemTypes = async (req, res) => {
   try {
     const { typeLevel } = req.params;
     const { parentTypeId } = req.query;
-    // const userId = req.userId;
-    const userId = 1;
+    const userId = req.userId;
 
     let types;
 
@@ -140,8 +138,7 @@ export const getProblemTypes = async (req, res) => {
 export const addProblemType = async (req, res) => {
   try {
     const { typeName, parentTypeId, typeLevel } = req.body;
-    // const userId = req.userId;
-    const userId = 1;
+    const userId = req.userId;
 
     if (typeLevel === 1) {
       await ProblemService.addProblemType(typeName, null, typeLevel, userId);
@@ -170,8 +167,7 @@ export const addProblemType = async (req, res) => {
 export const deleteProblem = async (req, res) => {
   try {
     const { problemId } = req.params;
-    // const userId = req.userId;
-    const userId = 1;
+    const userId = req.userId;
     const deleted = await ProblemService.deleteProblem(problemId, userId);
     if (deleted) {
       res.send(response(status.SUCCESS, deleteProblemResponseDTO("문제 삭제 성공")));

@@ -4,7 +4,7 @@ import { getAllFolders, orderFolders, renameFolder, deleteFolder, getFolderProbl
 
 export const folderRouter = express.Router();
 
-// folderRouter.use(authenticateToken)
+folderRouter.use(authenticateToken)
 
 folderRouter.get("/", getAllFolders);
 folderRouter.patch("/order", orderFolders);
